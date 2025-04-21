@@ -1,0 +1,29 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: rgb(21, 21, 21);
+}
+
+#game-arena {
+    height: 720px;
+    width: 955px;
+    margin: 0 auto;
+    background: url('img/Bg.png');
+    background-color: rgb(25, 18, 27);
+}
+#credits{
+    font-size: 25px;
+    color: rgb(129, 186, 237);
+    margin-left: 5px;
+    margin-top: 2px;
+    font-family: 'Courier New', Courier, monospace;
+}
+#head{
+    font-size: 30px;
+    color: rgb(198, 223, 108);
+    text-align: center;
+    font-style: italic;
+    font-weight: bolder;
+    margin: 1;
+    font-family: 'Courier New', Courier, monospace;
+}

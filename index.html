@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <link rel="stylesheet" href="style.css"/>
+<script src="./JS/Mygun.js"> </script>
+<script src="./JS/Mybullet.js"> </script>
+<script src="./JS/Enemy.js"> </script>
+<script src="./JS/Ebullet.js"> </script>
+
+</head>
+<body> 
+<audio id="bullet-shooting-sound"  src="./Sounds/Laser2.ogg"></audio>
+<audio id="background-music" src="./Sounds/background.ogg"></audio>
+<audio id="Explosion-Sound" src="./Sounds/Explosion1.ogg"></audio>
+<audio id="Player-Blast-Sound" src="./Sounds/Pl_Blast.wav"></audio>
+<p id="head">SPACE INVASION</p>
+<div id="game-arena">
+<canvas id="svs" width="955" height="720" style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.</canvas>
+<p id="credits">Harsh Choursia</p>
+
+<script>
+var stage = document.getElementById('svs'), 
+ctx = stage.getContext('2d'); 
+
+//document.addEventListener('keypress',shooting);
+document.addEventListener('keyup',PlayAgain);
+//document.addEventListener('keydown',Movegun);
+document.addEventListener('keydown', keyDownHandler);
+document.addEventListener('keyup', keyUpHandler);
+document.addEventListener('keyup',Reload);
+
+var image1,keyPr,x=0,y=0,flag,check=0,en,mg,i,j,k,l,m,pos,score=0,j,enemy =[],enX,enY;
+var dt,dt1,dt2,el,ct;
+var keysPressed = {};
+var canFire = true; // Flag to control firing
+
+image1=document.getElementById('game-arena');
+image1.posY=0;
+image1.speed=0;
+// Sounds stuff
+const backgroundMusic = document.getElementById("background-music");
+backgroundMusic.loop = true;
+const bulletShootingSound = document.getElementById("bullet-shooting-sound");
+const ExplosionSound=document.getElementById("Explosion-Sound");
+
+const PlayeDestroySound=document.getElementById("Player-Blast-Sound");
+
+function init() {
+    flag = 0;
+    check = 0;
+    score = 0;
+    ct = 0, dt = 0, dt1 = 0, el = 0;
+    el = Date.now();
+    initializeAgain(); // Call the enemy initialization function
+
+    gameLoop();
+    
+}
+
+
+function initializeAgain() {
+   
+    enemy = []; // Clear the existing enemy array
+    enX=0;
+    enY=100;
+    x = 300;
+    y = 600;
+    image1.speed = 2;
+    flag = 0;
+    score = 0;
+    check=0;
+    mg = new Mygun(x, y);
+
+    for (i = 0; i < 1; i++) {
+        enX = enX + 200;
+        enY = -60;
+        enemy.push(en = new Enemy(enX, enY)); 
+    }
+}
+
+function gameLoop() {
+    ctx.clearRect(0, 0, svs.width, svs.height);
+    ct = Date.now();
+    dt = ct - el;
+    image1.style.backgroundPositionY = image1.posY + 'px';
+    image1.posY += image1.speed;
+    mg.draw();
+    mg.update(x); 
+    backgroundMusic.play();
+    if(dt>=2000)
+        {
+            el = ct;
+            dt = 0;
+            enX=Math.floor(Math.random() * 1000);
+            enemy.push(en = new Enemy(enX, enY));
+            Trig();
+        }
+
+    for (i = 0; i < enemy.length; i++) {
+        enemy[i].draw("img/enemy.png");
+        enemy[i].update(enemy);
+    }
+
+    for (i = 0; i < mg.fires.length; i++) {
+        for (j = 0; j < enemy.length; j++) {
+            if (mg.Collision(mg.fires[i], enemy[j])) {
+                pos = j;
+                ExplosionSound.play();
+                enemy[j].draw("img/explosion.png");
+                enemy.splice(pos, 1);
+                mg.fires.splice(i, 1);
+                score = score + 10;
+            }
+        }
+    }
+
+    for (m = 0; m < enemy.length; m++) {
+        for (l = 0; l < enemy[m].efires.length; l++) {
+            if (mg.Collision(enemy[m].efires[l], mg)) {
+                flag = 1;
+                PlayeDestroySound.play();
+            }
+        }
+    }
+
+    for (k = 0; k < enemy.length; k++) {
+        if (mg.Collision(mg, enemy[k])) {
+            flag = 1;
+            PlayeDestroySound.play();
+        }
+    }
+           
+
+    GameScore();
+
+    updatePlayerPosition();
+
+    requestAnimationFrame(gameLoop);
+}
+
+function Trig() {
+    for (i = 0; i < enemy.length; i++) {
+        enemy[i].eFire();
+    }
+}
+init();
+
+function GameScore()
+    {
+        ctx.font = "25px Georgia";
+        ctx.fillStyle = "lightgreen";
+        ctx.textAlign = "center";
+        ctx.fillText("Score: " + score, 80, 40,200);
+        
+        if(flag===1)
+            {
+                enemy.splice(0,enemy.length);
+                mg.fires.splice(0,mg.fires.length);
+                en.efires.splice(0,en.efires.length);
+                
+                ctx.clearRect(0,0, svs.width, svs.height);
+                ctx.textAlign = "center";
+                ctx.fillStyle = "red";
+                ctx.fillText("Game Over.. You have Lost..Press r to Reload " , 450, 350);
+                image1.speed=0;     
+            }      
+    }
+
+function updatePlayerPosition() {
+   
+   // Arrow key handling
+    if (keysPressed[37] && x > 10) {
+        x = x - 4.75; 
+
+    } else if (keysPressed[39] && x <= 860) {
+        x = x + 4.75; 
+    }
+
+    // Spacebar handling
+    if (keysPressed[32] && canFire&&flag===0) {
+        mg.Fire();
+        bulletShootingSound.play();
+        canFire = false;
+        setTimeout(function() {
+            canFire = true;
+        }, 150); 
+    }
+}
+        
+    
+function PlayAgain(e)
+{
+        
+    keyPr = e.keyCode;
+    
+  
+        if(keyPr === 13 && score===20)
+        { 
+        
+            initializeAgain(); 
+        }
+    
+}
+
+function keyDownHandler(e) {
+    keysPressed[e.keyCode] = true;
+}
+
+function keyUpHandler(e) {
+    keysPressed[e.keyCode] = false;
+}
+
+
+function Reload(e) {
+    keyPr = e.keyCode;
+
+    if (keyPr === 82 && flag === 1) {
+
+       mg.fires.splice(0, mg.fires.length);
+       en.efires.splice(0, en.efires.length);
+        
+        initializeAgain(); 
+    }
+}
+
+</script>
+</div>
+</body>
+</html>
