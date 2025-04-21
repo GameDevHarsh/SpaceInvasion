@@ -17,7 +17,7 @@
 - **JavaScript** – Handling game logic, object movement, collision, scoring, and game states
 
 ## ▶️ How to Play
-1. [Click here to play Space Invasion in any Modern Web Browser](#https://gamedevharsh.github.io/SpaceInvasion/)
+1. [Click here to play Space Invasion in any Modern Web Browser](https://gamedevharsh.github.io/SpaceInvasion/)
 2. Use **Left Arrow** and **Right Arrow** to move the spaceship
 3. Press **Spacebar** to shoot bullets
 4. Avoid enemy bullets and shoot down enemies
